@@ -1,0 +1,36 @@
+export type User = { id: string; name: string; email: string; avatarUrl?: string | null; role: 'ADMIN' | 'MEMBER' };
+export type Team = { id: string; name: string; description?: string; members?: Array<{ user: User; role: string }>; channels?: Channel[] };
+export type Project = { id: string; teamId: string; name: string; description?: string; status: 'ACTIVE' | 'PAUSED' | 'COMPLETED'; tasks?: Task[]; channels?: Channel[] };
+export type Task = { id: string; projectId: string; title: string; description?: string; status: 'PENDING' | 'IN_PROGRESS' | 'COMPLETED'; priority: 'LOW' | 'MEDIUM' | 'HIGH' | 'URGENT'; labels: string[]; dueDate?: string; assignedTo?: User; comments?: TaskComment[] };
+export type TaskComment = { id: string; content: string; createdAt: string; user: User };
+export type EventItem = {
+  id: string;
+  title: string;
+  description?: string;
+  startDate: string;
+  endDate: string;
+  type: 'MEETING' | 'DEADLINE' | 'REMINDER';
+  teamId?: string;
+  projectId?: string | null;
+  team?: Pick<Team, 'id' | 'name'>;
+  project?: Pick<Project, 'id' | 'name' | 'status'> | null;
+};
+export type Channel = { id: string; teamId: string; projectId?: string; name: string; type: 'TEAM' | 'PROJECT' };
+export type Message = { id: string; channelId: string; content: string; createdAt: string; user: Pick<User, 'id' | 'name' | 'avatarUrl'> };
+export type ProjectFile = { id: string; originalName: string; mimeType: string; size: number; createdAt: string; uploadedBy?: Pick<User, 'id' | 'name'> };
+export type NotificationItem = {
+  id: string;
+  type: 'MESSAGE' | 'EVENT_TODAY' | 'TEAM_MEMBER_ADDED' | 'PROJECT_CREATED';
+  title: string;
+  body: string;
+  readAt?: string | null;
+  createdAt: string;
+  teamId?: string | null;
+  projectId?: string | null;
+  channelId?: string | null;
+  eventId?: string | null;
+  team?: Pick<Team, 'id' | 'name'> | null;
+  project?: Pick<Project, 'id' | 'name'> | null;
+  channel?: Pick<Channel, 'id' | 'name'> | null;
+  event?: Pick<EventItem, 'id' | 'title' | 'startDate'> | null;
+};

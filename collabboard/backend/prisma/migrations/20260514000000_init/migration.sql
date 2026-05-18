@@ -1,0 +1,144 @@
+CREATE TYPE "GlobalRole" AS ENUM ('ADMIN', 'MEMBER');
+CREATE TYPE "TeamRole" AS ENUM ('OWNER', 'MANAGER', 'MEMBER');
+CREATE TYPE "ProjectStatus" AS ENUM ('ACTIVE', 'PAUSED', 'COMPLETED');
+CREATE TYPE "TaskStatus" AS ENUM ('PENDING', 'IN_PROGRESS', 'COMPLETED');
+CREATE TYPE "TaskPriority" AS ENUM ('LOW', 'MEDIUM', 'HIGH', 'URGENT');
+CREATE TYPE "EventType" AS ENUM ('MEETING', 'DEADLINE', 'REMINDER');
+CREATE TYPE "ChannelType" AS ENUM ('TEAM', 'PROJECT');
+
+CREATE TABLE "User" (
+  "id" TEXT NOT NULL,
+  "name" TEXT NOT NULL,
+  "email" TEXT NOT NULL,
+  "password" TEXT NOT NULL,
+  "avatarUrl" TEXT,
+  "role" "GlobalRole" NOT NULL DEFAULT 'MEMBER',
+  "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  "updatedAt" TIMESTAMP(3) NOT NULL,
+  CONSTRAINT "User_pkey" PRIMARY KEY ("id")
+);
+
+CREATE TABLE "Team" (
+  "id" TEXT NOT NULL,
+  "name" TEXT NOT NULL,
+  "description" TEXT,
+  "ownerId" TEXT NOT NULL,
+  "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  "updatedAt" TIMESTAMP(3) NOT NULL,
+  CONSTRAINT "Team_pkey" PRIMARY KEY ("id")
+);
+
+CREATE TABLE "TeamMember" (
+  "id" TEXT NOT NULL,
+  "userId" TEXT NOT NULL,
+  "teamId" TEXT NOT NULL,
+  "role" "TeamRole" NOT NULL DEFAULT 'MEMBER',
+  "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  CONSTRAINT "TeamMember_pkey" PRIMARY KEY ("id")
+);
+
+CREATE TABLE "Project" (
+  "id" TEXT NOT NULL,
+  "teamId" TEXT NOT NULL,
+  "name" TEXT NOT NULL,
+  "description" TEXT,
+  "status" "ProjectStatus" NOT NULL DEFAULT 'ACTIVE',
+  "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  "updatedAt" TIMESTAMP(3) NOT NULL,
+  CONSTRAINT "Project_pkey" PRIMARY KEY ("id")
+);
+
+CREATE TABLE "Task" (
+  "id" TEXT NOT NULL,
+  "projectId" TEXT NOT NULL,
+  "title" TEXT NOT NULL,
+  "description" TEXT,
+  "status" "TaskStatus" NOT NULL DEFAULT 'PENDING',
+  "priority" "TaskPriority" NOT NULL DEFAULT 'MEDIUM',
+  "labels" TEXT[] DEFAULT ARRAY[]::TEXT[],
+  "dueDate" TIMESTAMP(3),
+  "assignedToId" TEXT,
+  "createdById" TEXT NOT NULL,
+  "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  "updatedAt" TIMESTAMP(3) NOT NULL,
+  CONSTRAINT "Task_pkey" PRIMARY KEY ("id")
+);
+
+CREATE TABLE "TaskComment" (
+  "id" TEXT NOT NULL,
+  "taskId" TEXT NOT NULL,
+  "userId" TEXT NOT NULL,
+  "content" TEXT NOT NULL,
+  "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  CONSTRAINT "TaskComment_pkey" PRIMARY KEY ("id")
+);
+
+CREATE TABLE "Event" (
+  "id" TEXT NOT NULL,
+  "teamId" TEXT NOT NULL,
+  "projectId" TEXT,
+  "createdById" TEXT NOT NULL,
+  "title" TEXT NOT NULL,
+  "description" TEXT,
+  "startDate" TIMESTAMP(3) NOT NULL,
+  "endDate" TIMESTAMP(3) NOT NULL,
+  "type" "EventType" NOT NULL,
+  "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  "updatedAt" TIMESTAMP(3) NOT NULL,
+  CONSTRAINT "Event_pkey" PRIMARY KEY ("id")
+);
+
+CREATE TABLE "Channel" (
+  "id" TEXT NOT NULL,
+  "teamId" TEXT NOT NULL,
+  "projectId" TEXT,
+  "name" TEXT NOT NULL,
+  "type" "ChannelType" NOT NULL,
+  "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  CONSTRAINT "Channel_pkey" PRIMARY KEY ("id")
+);
+
+CREATE TABLE "Message" (
+  "id" TEXT NOT NULL,
+  "channelId" TEXT NOT NULL,
+  "userId" TEXT NOT NULL,
+  "content" TEXT NOT NULL,
+  "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  CONSTRAINT "Message_pkey" PRIMARY KEY ("id")
+);
+
+CREATE TABLE "File" (
+  "id" TEXT NOT NULL,
+  "projectId" TEXT NOT NULL,
+  "uploadedById" TEXT NOT NULL,
+  "originalName" TEXT NOT NULL,
+  "storedName" TEXT NOT NULL,
+  "path" TEXT NOT NULL,
+  "mimeType" TEXT NOT NULL,
+  "size" INTEGER NOT NULL,
+  "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  CONSTRAINT "File_pkey" PRIMARY KEY ("id")
+);
+
+CREATE UNIQUE INDEX "User_email_key" ON "User"("email");
+CREATE UNIQUE INDEX "TeamMember_userId_teamId_key" ON "TeamMember"("userId", "teamId");
+
+ALTER TABLE "Team" ADD CONSTRAINT "Team_ownerId_fkey" FOREIGN KEY ("ownerId") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE "TeamMember" ADD CONSTRAINT "TeamMember_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE "TeamMember" ADD CONSTRAINT "TeamMember_teamId_fkey" FOREIGN KEY ("teamId") REFERENCES "Team"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE "Project" ADD CONSTRAINT "Project_teamId_fkey" FOREIGN KEY ("teamId") REFERENCES "Team"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE "Task" ADD CONSTRAINT "Task_projectId_fkey" FOREIGN KEY ("projectId") REFERENCES "Project"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE "Task" ADD CONSTRAINT "Task_assignedToId_fkey" FOREIGN KEY ("assignedToId") REFERENCES "User"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+ALTER TABLE "Task" ADD CONSTRAINT "Task_createdById_fkey" FOREIGN KEY ("createdById") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE "TaskComment" ADD CONSTRAINT "TaskComment_taskId_fkey" FOREIGN KEY ("taskId") REFERENCES "Task"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE "TaskComment" ADD CONSTRAINT "TaskComment_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE "Event" ADD CONSTRAINT "Event_teamId_fkey" FOREIGN KEY ("teamId") REFERENCES "Team"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE "Event" ADD CONSTRAINT "Event_projectId_fkey" FOREIGN KEY ("projectId") REFERENCES "Project"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE "Event" ADD CONSTRAINT "Event_createdById_fkey" FOREIGN KEY ("createdById") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE "Channel" ADD CONSTRAINT "Channel_teamId_fkey" FOREIGN KEY ("teamId") REFERENCES "Team"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE "Channel" ADD CONSTRAINT "Channel_projectId_fkey" FOREIGN KEY ("projectId") REFERENCES "Project"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE "Message" ADD CONSTRAINT "Message_channelId_fkey" FOREIGN KEY ("channelId") REFERENCES "Channel"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE "Message" ADD CONSTRAINT "Message_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE "File" ADD CONSTRAINT "File_projectId_fkey" FOREIGN KEY ("projectId") REFERENCES "Project"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE "File" ADD CONSTRAINT "File_uploadedById_fkey" FOREIGN KEY ("uploadedById") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
