@@ -15,6 +15,9 @@ export function ProjectCard({ project }: { project: Project }) {
         <Link className="btn btn-primary" href={`/projects/${project.id}/tasks`}>Tareas</Link>
         <Link className="btn btn-secondary" href={`/projects/${project.id}/calendar`}>Calendario</Link>
         <Link className="btn btn-secondary" href={`/projects/${project.id}/files`}>Archivos</Link>
+        {project.channels?.map((channel) => (
+          <Link className="btn btn-secondary" key={channel.id} href={`/chat/${channel.id}`}>Chat</Link>
+        ))}
       </div>
     </div>
   );

@@ -30,7 +30,7 @@ export default function TeamDetailPage({ params }: { params: Promise<{ id: strin
           <div className="mt-4 space-y-2">{team?.members?.map((member) => <div className="flex items-center justify-between rounded-md bg-slate-50 p-2" key={member.user.id}><span>{member.user.name}</span><RoleBadge role={member.role} /></div>)}</div>
           <div className="mt-4 border-t border-slate-100 pt-4">
             <p className="label mb-2">Canales</p>
-            <div className="flex flex-wrap gap-2">{team?.channels?.map((channel) => <Link className="btn btn-secondary" key={channel.id} href={`/chat/${channel.id}`}>{channel.name}</Link>)}</div>
+            <div className="flex flex-wrap gap-2">{team?.channels?.filter((channel) => channel.type === 'TEAM').map((channel) => <Link className="btn btn-secondary" key={channel.id} href={`/chat/${channel.id}`}>{channel.name}</Link>)}</div>
           </div>
         </section>
         <section className="space-y-3">
