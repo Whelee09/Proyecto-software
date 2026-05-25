@@ -9,7 +9,10 @@ async function bootstrap() {
   const config = app.get(ConfigService);
 
   app.enableCors({
-    origin: config.get<string>('FRONTEND_URL') ?? 'http://localhost:3000',
+    origin: (origin, callback) => {
+      // Permitimos cualquier origen temporalmente para evitar el error de CORS
+      callback(null, true);
+    },
     credentials: true,
   });
   app.useGlobalPipes(
