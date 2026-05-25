@@ -5,13 +5,8 @@ import { ProjectFile } from '@/lib/types';
 
 export function FileList({ files }: { files: ProjectFile[] }) {
   const download = async (file: ProjectFile) => {
-    const response = await api.get(`/files/download/${file.id}`, { responseType: 'blob' });
-    const url = URL.createObjectURL(response.data);
-    const link = document.createElement('a');
-    link.href = url;
-    link.download = file.originalName;
-    link.click();
-    URL.revokeObjectURL(url);
+    // Al hacer GET a este endpoint ahora nos redirigirá a la URL firmada de Supabase
+    window.open(`${api.defaults.baseURL}/files/download/${file.id}`, '_blank');
   };
   return (
     <div className="card overflow-hidden">

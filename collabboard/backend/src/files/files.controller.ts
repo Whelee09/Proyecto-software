@@ -20,8 +20,8 @@ export class FilesController {
   upload(@Param('projectId') projectId: string, @UploadedFile() file: Express.Multer.File, @CurrentUser() user: AuthUser) { return this.files.save(projectId, file, user); }
   @Get('project/:projectId') byProject(@Param('projectId') projectId: string, @CurrentUser() user: AuthUser) { return this.files.byProject(projectId, user); }
   @Get('download/:id') async download(@Param('id') id: string, @CurrentUser() user: AuthUser, @Res() res: Response) {
-    const file = await this.files.getDownload(id, user);
-    return res.download(file.path, file.originalName);
+    const { url } = await this.files.getDownloadUrl(id, user);
+    return res.redirect(url);
   }
   @Delete(':id') remove(@Param('id') id: string, @CurrentUser() user: AuthUser) { return this.files.remove(id, user); }
 }
