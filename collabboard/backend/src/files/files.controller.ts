@@ -23,6 +23,7 @@ export class FilesController {
     const { url } = await this.files.getDownloadUrl(id, user);
     return res.redirect(url);
   }
+  @Get('url/:id') getUrl(@Param('id') id: string, @CurrentUser() user: AuthUser) { return this.files.getDownloadUrl(id, user); }
   @Delete(':id') remove(@Param('id') id: string, @CurrentUser() user: AuthUser) { return this.files.remove(id, user); }
 }
 
