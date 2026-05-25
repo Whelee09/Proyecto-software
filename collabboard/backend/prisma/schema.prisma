@@ -58,9 +58,10 @@ enum NotificationType {
 
 model User {
   id             String        @id @default(cuid())
+  supabaseId     String?       @unique
   name           String
   email          String        @unique
-  password       String
+  password       String?
   avatarUrl      String?
   role           GlobalRole    @default(MEMBER)
   createdAt      DateTime      @default(now())
