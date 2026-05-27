@@ -16,7 +16,7 @@ export default function ProjectCalendarPage({ params }: { params: Promise<{ id: 
   }, [id]);
   return (
     <AppShell>
-      {project ? <CalendarView projectId={id} teamId={project.teamId} initialEvents={events} /> : <p>Cargando calendario...</p>}
+      {project ? <CalendarView projectId={id} teamId={project.teamId} initialEvents={events} /> : <p className="workspace-panel surface-grid p-5 text-sm font-black uppercase text-app-muted">Cargando calendario...</p>}
     </AppShell>
   );
 }

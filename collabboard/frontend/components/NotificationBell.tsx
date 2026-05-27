@@ -60,17 +60,17 @@ export function NotificationBell() {
       <button className="btn btn-secondary relative h-10 w-10 p-0" onClick={() => setOpen((value) => !value)} aria-label="Notificaciones">
         <Bell size={18} />
         {unread > 0 && (
-          <span className="absolute -right-1 -top-1 flex h-5 min-w-5 items-center justify-center rounded-full bg-app-error px-1 text-[11px] font-bold text-white">
+          <span className="absolute -right-1 -top-1 flex h-5 min-w-5 items-center justify-center rounded-full border border-app-ink bg-app-error px-1 text-[11px] font-black text-white">
             {unread}
           </span>
         )}
       </button>
       {open && (
-        <div className="absolute right-0 z-30 mt-2 w-[min(92vw,420px)] overflow-hidden rounded-lg border border-slate-200 bg-white shadow-soft">
-          <div className="flex items-center justify-between border-b border-slate-100 p-3">
+        <div className="absolute right-0 z-30 mt-2 w-[min(92vw,420px)] overflow-hidden rounded-lg border border-app-ink bg-white shadow-tactile">
+          <div className="surface-grid flex items-center justify-between border-b border-app-border p-3">
             <div>
-              <p className="text-sm font-bold">Notificaciones</p>
-              <p className="text-xs text-slate-500">{todayEvents.length} eventos para hoy</p>
+              <p className="text-sm font-black">Notificaciones</p>
+              <p className="text-xs font-semibold text-app-muted">{todayEvents.length} eventos para hoy</p>
             </div>
             <button className="btn btn-secondary px-2 py-1 text-xs" onClick={markAll}>
               <CheckCheck size={14} /> Leer todo
@@ -78,21 +78,21 @@ export function NotificationBell() {
           </div>
           <div className="max-h-96 overflow-y-auto">
             {items.map((item) => (
-              <button key={item.id} onClick={() => openNotification(item)} className="flex w-full gap-3 border-b border-slate-100 p-3 text-left hover:bg-slate-50">
-                <span className={`mt-1 flex h-8 w-8 shrink-0 items-center justify-center rounded-full ${item.readAt ? 'bg-slate-100 text-slate-500' : 'bg-blue-100 text-app-primary'}`}>
+              <button key={item.id} onClick={() => openNotification(item)} className="flex w-full gap-3 border-b border-app-border p-3 text-left transition hover:bg-app-surfaceTint">
+                <span className={`mt-1 flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border ${item.readAt ? 'border-app-border bg-white text-app-muted' : 'border-app-primary bg-app-primary text-white'}`}>
                   <NotificationIcon type={item.type} />
                 </span>
                 <span className="min-w-0 flex-1">
                   <span className="flex items-center gap-2">
-                    <span className="truncate text-sm font-semibold">{item.title}</span>
-                    {!item.readAt && <span className="h-2 w-2 shrink-0 rounded-full bg-app-primary" />}
+                    <span className="truncate text-sm font-black">{item.title}</span>
+                    {!item.readAt && <span className="live-dot shrink-0" />}
                   </span>
-                  <span className="mt-1 line-clamp-2 text-xs text-slate-500">{item.body}</span>
-                  <span className="mt-1 block text-[11px] text-slate-400">{new Date(item.createdAt).toLocaleString('es-CO')}</span>
+                  <span className="mt-1 line-clamp-2 text-xs font-medium text-app-muted">{item.body}</span>
+                  <span className="mt-1 block text-[11px] font-semibold text-slate-400">{new Date(item.createdAt).toLocaleString('es-CO')}</span>
                 </span>
               </button>
             ))}
-            {!items.length && <p className="p-4 text-sm text-slate-500">No tienes notificaciones.</p>}
+            {!items.length && <p className="p-4 text-sm font-semibold text-app-muted">No tienes notificaciones.</p>}
           </div>
         </div>
       )}

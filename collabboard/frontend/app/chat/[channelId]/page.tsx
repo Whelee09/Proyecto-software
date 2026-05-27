@@ -18,7 +18,7 @@ export default function ChatPage({ params }: { params: Promise<{ channelId: stri
   }, [channelId]);
   return (
     <AppShell>
-      {channelId === 'demo' ? <div className="card p-5 text-sm text-slate-500">Abre un canal real desde un equipo o proyecto para usar el chat.</div> : messages && <ChatWindow channelId={channelId} initialMessages={messages} />}
+      {channelId === 'demo' ? <div className="workspace-panel p-5 text-sm font-semibold text-app-muted">Abre un canal real desde un equipo o proyecto para usar el chat.</div> : messages && <ChatWindow channelId={channelId} initialMessages={messages} />}
     </AppShell>
   );
 }

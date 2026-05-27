@@ -90,36 +90,36 @@ export function GlobalCalendar({ events }: { events: EventItem[] }) {
 
   return (
     <div className="space-y-5">
-      <section className="card p-4">
+      <section className="workspace-panel p-4">
         <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
           <div>
             <p className="label">Hoy</p>
-            <h2 className="text-xl font-bold">Eventos del dia</h2>
+            <h2 className="text-xl font-black">Eventos del dia</h2>
           </div>
-          <span className="rounded-full bg-blue-100 px-3 py-1 text-sm font-semibold text-app-primary">{todayEvents.length} eventos</span>
+          <span className="status-chip">{todayEvents.length} eventos</span>
         </div>
         <div className="mt-4 grid gap-3 md:grid-cols-2 xl:grid-cols-3">
           {todayEvents.map((event) => {
             const color = colorByProject.get(event.project?.id ?? 'team') ?? projectColors[0];
             return (
-              <article key={event.id} className={`rounded-md border p-3 ${color.soft} ${color.border}`}>
+              <article key={event.id} className={`rounded-lg border p-3 shadow-soft transition hover:-translate-y-0.5 ${color.soft} ${color.border}`}>
                 <div className="flex items-center gap-2">
                   <span className={`h-3 w-3 rounded-full ${color.bg}`} />
-                  <p className={`font-semibold ${color.text}`}>{event.title}</p>
+                  <p className={`font-black ${color.text}`}>{event.title}</p>
                 </div>
-                <p className="mt-2 text-sm text-slate-600">{eventTime(event)} · {event.project?.name ?? event.team?.name ?? 'Equipo'}</p>
+                <p className="mt-2 text-sm font-semibold text-app-muted">{eventTime(event)} - {event.project?.name ?? event.team?.name ?? 'Equipo'}</p>
               </article>
             );
           })}
-          {!todayEvents.length && <p className="text-sm text-slate-500">No tienes eventos programados para hoy.</p>}
+          {!todayEvents.length && <p className="rounded-lg border border-dashed border-app-border p-4 text-sm font-semibold text-app-muted">No tienes eventos programados para hoy.</p>}
         </div>
       </section>
 
-      <section className="card p-4">
+      <section className="workspace-panel p-4">
         <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
           <div>
             <p className="label">Calendario personal</p>
-            <h2 className="text-2xl font-bold capitalize">
+            <h2 className="text-2xl font-black capitalize">
               {currentMonth.toLocaleDateString('es-CO', { month: 'long', year: 'numeric' })}
             </h2>
           </div>
@@ -135,19 +135,19 @@ export function GlobalCalendar({ events }: { events: EventItem[] }) {
         </div>
         <div className="mt-4 flex flex-wrap gap-2">
           {legend.map(([id, item]) => (
-            <span key={id} className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white px-3 py-1 text-xs font-semibold text-slate-700">
+            <span key={id} className="inline-flex items-center gap-2 rounded-full border border-app-border bg-white px-3 py-1 text-xs font-black text-app-ink">
               <span className={`h-2.5 w-2.5 rounded-full ${item.color.bg}`} />
               {item.name}
             </span>
           ))}
-          {!legend.length && <span className="text-sm text-slate-500">No tienes eventos programados.</span>}
+          {!legend.length && <span className="text-sm font-semibold text-app-muted">No tienes eventos programados.</span>}
         </div>
       </section>
 
-      <section className="card overflow-hidden">
-        <div className="grid grid-cols-7 border-b border-slate-200 bg-slate-50">
+      <section className="workspace-panel overflow-hidden">
+        <div className="surface-grid grid grid-cols-7 border-b border-app-border">
           {weekdays.map((day) => (
-            <div key={day} className="px-2 py-3 text-center text-xs font-bold uppercase text-slate-500 md:text-sm">{day}</div>
+            <div key={day} className="px-2 py-3 text-center text-xs font-black uppercase text-app-muted md:text-sm">{day}</div>
           ))}
         </div>
         <div className="grid grid-cols-1 md:grid-cols-7">
@@ -156,12 +156,12 @@ export function GlobalCalendar({ events }: { events: EventItem[] }) {
             const dayEvents = eventsByDay[key] ?? [];
             const outside = date.getMonth() !== currentMonth.getMonth();
             return (
-              <div key={key} className={`min-h-32 border-b border-slate-200 p-2 md:border-r ${outside ? 'bg-slate-50/70 text-slate-400' : 'bg-white'}`}>
+              <div key={key} className={`min-h-32 border-b border-app-border p-2 md:border-r ${outside ? 'bg-slate-50/70 text-slate-400' : 'bg-white'}`}>
                 <div className="mb-2 flex items-center justify-between">
-                  <span className={`flex h-7 w-7 items-center justify-center rounded-full text-sm font-semibold ${key === today ? 'bg-app-primary text-white' : ''}`}>
+                  <span className={`flex h-7 w-7 items-center justify-center rounded-full text-sm font-black ${key === today ? 'bg-app-primary text-white shadow-tactile' : ''}`}>
                     {date.getDate()}
                   </span>
-                  <span className="text-[11px] font-semibold text-slate-400 md:hidden">
+                  <span className="text-[11px] font-black text-slate-400 md:hidden">
                     {date.toLocaleDateString('es-CO', { weekday: 'short' })}
                   </span>
                 </div>
@@ -169,18 +169,18 @@ export function GlobalCalendar({ events }: { events: EventItem[] }) {
                   {dayEvents.slice(0, 4).map((event) => {
                     const color = colorByProject.get(event.project?.id ?? 'team') ?? projectColors[0];
                     return (
-                      <article key={event.id} className={`rounded-md border px-2 py-1 ${color.soft} ${color.border}`}>
+                      <article key={event.id} className={`rounded-md border px-2 py-1 transition hover:-translate-y-0.5 ${color.soft} ${color.border}`}>
                         <div className="flex items-center gap-1.5">
                           <span className={`h-2 w-2 shrink-0 rounded-full ${color.bg}`} />
-                          <p className={`truncate text-xs font-semibold ${color.text}`}>{event.title}</p>
+                          <p className={`truncate text-xs font-black ${color.text}`}>{event.title}</p>
                         </div>
-                        <p className="mt-0.5 truncate text-[11px] text-slate-500">
-                          {eventTime(event)} · {event.project?.name ?? event.team?.name ?? 'Equipo'}
+                        <p className="mt-0.5 truncate text-[11px] font-semibold text-app-muted">
+                          {eventTime(event)} - {event.project?.name ?? event.team?.name ?? 'Equipo'}
                         </p>
                       </article>
                     );
                   })}
-                  {dayEvents.length > 4 && <p className="text-[11px] font-semibold text-slate-500">+{dayEvents.length - 4} mas</p>}
+                  {dayEvents.length > 4 && <p className="text-[11px] font-black text-app-muted">+{dayEvents.length - 4} mas</p>}
                 </div>
               </div>
             );

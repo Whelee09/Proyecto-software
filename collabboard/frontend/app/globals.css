@@ -3,21 +3,93 @@
 @tailwind utilities;
 
 * { box-sizing: border-box; }
+:root {
+  --app-ink: #111318;
+  --app-bg: #f6f8f3;
+  --app-surface: #ffffff;
+  --app-border: #d9e0ea;
+  --app-brand: #255de3;
+  --app-presence: #00a896;
+  --app-due: #f4b000;
+  --app-urgent: #ff5a5f;
+}
+
+html {
+  background: var(--app-bg);
+}
+
 body {
   margin: 0;
-  background: #F8FAFC;
-  color: #111827;
+  min-height: 100vh;
+  background:
+    linear-gradient(90deg, rgba(17, 19, 24, 0.035) 1px, transparent 1px),
+    linear-gradient(180deg, rgba(17, 19, 24, 0.035) 1px, transparent 1px),
+    linear-gradient(135deg, rgba(0, 168, 150, 0.08) 0 22%, transparent 22% 100%),
+    linear-gradient(315deg, rgba(37, 93, 227, 0.07) 0 18%, transparent 18% 100%),
+    var(--app-bg);
+  background-size: 36px 36px, 36px 36px, auto, auto, auto;
+  color: var(--app-ink);
+  font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+  text-rendering: optimizeLegibility;
 }
 a { color: inherit; text-decoration: none; }
+button, input, select, textarea { font: inherit; }
 
 .input {
-  @apply w-full rounded-md border border-slate-200 bg-white px-3 py-2 text-sm outline-none transition focus:border-app-primary focus:ring-2 focus:ring-blue-100;
+  @apply w-full rounded-md border border-app-border bg-white px-3 py-2.5 text-sm text-app-ink outline-none transition placeholder:text-slate-400 focus:border-app-primary focus:ring-2 focus:ring-app-primary/20;
 }
 .btn {
-  @apply inline-flex items-center justify-center gap-2 rounded-md px-3 py-2 text-sm font-semibold transition disabled:cursor-not-allowed disabled:opacity-60;
+  @apply relative inline-flex min-h-10 items-center justify-center gap-2 overflow-hidden rounded-md border px-3.5 py-2 text-sm font-bold transition duration-200 disabled:cursor-not-allowed disabled:opacity-60 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-app-ink;
 }
-.btn-primary { @apply bg-app-primary text-white hover:bg-blue-700; }
-.btn-secondary { @apply border border-slate-200 bg-white text-slate-700 hover:bg-slate-50; }
-.card { @apply rounded-lg border border-slate-200 bg-white shadow-soft; }
-.label { @apply text-xs font-semibold uppercase tracking-normal text-slate-500; }
+.btn::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  transform: translateX(-105%);
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.34), transparent);
+  transition: transform 420ms ease;
+}
+.btn:hover::after { transform: translateX(105%); }
+.btn:active { transform: translateY(1px) scale(0.99); }
+.btn-primary { @apply border-app-ink bg-app-primary text-white shadow-tactile hover:-translate-y-0.5 hover:bg-blue-700 hover:shadow-lift; }
+.btn-secondary { @apply border-app-border bg-white text-app-ink hover:-translate-y-0.5 hover:border-app-ink hover:bg-app-surfaceTint; }
+.btn-ghost { @apply border-transparent bg-transparent text-app-ink hover:border-app-border hover:bg-white; }
+.card { @apply rounded-lg border border-app-border bg-white shadow-soft; }
+.label { @apply text-xs font-black uppercase tracking-normal text-app-muted; }
+.surface-grid {
+  background-image:
+    linear-gradient(rgba(17, 19, 24, 0.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(17, 19, 24, 0.05) 1px, transparent 1px);
+  background-size: 28px 28px;
+}
+.live-dot {
+  @apply relative inline-flex h-2.5 w-2.5 rounded-full bg-app-presence;
+}
+.live-dot::after {
+  content: "";
+  @apply absolute inset-0 rounded-full bg-app-presence opacity-70;
+  animation: pulseSoft 2.4s ease-in-out infinite;
+}
+.status-chip {
+  @apply inline-flex items-center gap-2 rounded-full border border-app-border bg-white px-3 py-1 text-xs font-black text-app-ink;
+}
+.workspace-panel {
+  @apply relative overflow-hidden rounded-lg border border-app-border bg-white shadow-soft;
+}
+.workspace-panel::before {
+  content: "";
+  @apply absolute left-0 top-0 h-full w-1 bg-app-primary;
+}
+.sticker {
+  @apply inline-flex rotate-[-1deg] items-center gap-2 rounded-md border border-app-ink bg-app-warning px-2.5 py-1 text-xs font-black text-app-ink shadow-tactile;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
+    transition-duration: 0.001ms !important;
+  }
+}
 

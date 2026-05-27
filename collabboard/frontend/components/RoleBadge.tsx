@@ -1,10 +1,10 @@
 export function RoleBadge({ role }: { role: string }) {
   const styles: Record<string, string> = {
-    ADMIN: 'bg-blue-100 text-blue-700',
-    MEMBER: 'bg-slate-100 text-slate-700',
-    OWNER: 'bg-emerald-100 text-emerald-700',
-    MANAGER: 'bg-amber-100 text-amber-700',
+    ADMIN: 'bg-app-primary text-white border-app-primary',
+    MEMBER: 'bg-app-surfaceTint text-app-ink border-app-border',
+    OWNER: 'bg-app-presence text-white border-app-presence',
+    MANAGER: 'bg-app-warning text-app-ink border-app-warning',
   };
-  return <span className={`rounded-full px-2 py-1 text-xs font-semibold ${styles[role] ?? styles.MEMBER}`}>{role}</span>;
+  return <span className={`rounded-full border px-2.5 py-1 text-xs font-black ${styles[role] ?? styles.MEMBER}`}>{role}</span>;
 }
 

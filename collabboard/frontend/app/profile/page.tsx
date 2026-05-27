@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { Save, UserCircle } from 'lucide-react';
 import { AppShell } from '@/components/AppShell';
 import { useAuth } from '@/context/AuthContext';
 import { api } from '@/lib/api';
@@ -21,12 +22,20 @@ export default function ProfilePage() {
   };
   return (
     <AppShell>
-      <form onSubmit={save} className="card max-w-xl space-y-4 p-5">
-        <h2 className="text-xl font-bold">Perfil</h2>
+      <form onSubmit={save} className="workspace-panel max-w-xl space-y-4 p-5">
+        <div className="flex items-center gap-3">
+          <span className="grid h-11 w-11 place-items-center rounded-lg bg-app-primary text-white shadow-tactile">
+            <UserCircle size={21} />
+          </span>
+          <div>
+            <p className="label">Cuenta</p>
+            <h2 className="text-xl font-black">Perfil</h2>
+          </div>
+        </div>
         <input className="input" value={name} onChange={(event) => setName(event.target.value)} placeholder="Nombre" />
         <input className="input" value={avatarUrl ?? ''} onChange={(event) => setAvatarUrl(event.target.value)} placeholder="URL de foto" />
-        <p className="text-sm text-slate-500">Correo: {user?.email}</p>
-        <button className="btn btn-primary">Guardar cambios</button>
+        <p className="rounded-lg border border-app-border bg-app-surfaceTint p-3 text-sm font-semibold text-app-muted">Correo: {user?.email}</p>
+        <button className="btn btn-primary"><Save size={16} /> Guardar cambios</button>
       </form>
     </AppShell>
   );

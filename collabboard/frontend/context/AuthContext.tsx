@@ -6,6 +6,9 @@ import { api } from '@/lib/api';
 import { supabase } from '@/lib/supabase';
 import { User } from '@/lib/types';
 
+const demoMode = process.env.NEXT_PUBLIC_DEMO_MODE === 'true';
+const demoToken = process.env.NEXT_PUBLIC_DEMO_TOKEN ?? 'dev-demo-token';
+
 type AuthContextValue = {
   user: User | null;
   loading: boolean;
@@ -24,6 +27,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const router = useRouter();
 
   const refreshMe = async () => {
+    if (demoMode) {
+      localStorage.setItem('collabboard_token', demoToken);
+      const { data } = await api.get<User>('/auth/me');
+      setUser(data);
+      setLoading(false);
+      return;
+    }
     const { data: { session } } = await supabase.auth.getSession();
     if (!session) { setLoading(false); return; }
     const { data } = await api.get<User>('/auth/me');
@@ -53,6 +63,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     loading,
     refreshMe,
     login: async (email, password) => {
+      if (demoMode) {
+        localStorage.setItem('collabboard_token', demoToken);
+        const { data } = await api.get<User>('/auth/me');
+        setUser(data);
+        router.push('/dashboard');
+        return;
+      }
       const { error } = await supabase.auth.signInWithPassword({ email, password });
       if (error) throw new Error(error.message);
     },
@@ -73,6 +90,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       if (error) throw new Error(error.message);
     },
     logout: async () => {
+      if (demoMode) {
+        localStorage.removeItem('collabboard_token');
+        setUser(null);
+        router.push('/login');
+        return;
+      }
       await supabase.auth.signOut();
     },
   }), [user, loading, router]);

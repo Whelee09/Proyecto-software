@@ -19,7 +19,7 @@ export default function CalendarPage() {
   return (
     <AppShell>
       {loading ? (
-        <div className="card p-6 text-sm text-slate-500">Cargando calendario...</div>
+        <div className="workspace-panel surface-grid p-6 text-sm font-black uppercase text-app-muted">Cargando calendario...</div>
       ) : (
         <GlobalCalendar events={events} />
       )}

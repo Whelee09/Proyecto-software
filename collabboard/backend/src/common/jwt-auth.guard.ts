@@ -6,17 +6,21 @@ import { AuthUser } from './current-user.decorator';
 
 @Injectable()
 export class JwtAuthGuard implements CanActivate {
-  private readonly supabase: SupabaseClient;
+  private readonly supabase?: SupabaseClient;
+  private readonly demoAuthEnabled: boolean;
 
   constructor(
-    config: ConfigService,
+    private readonly config: ConfigService,
     private readonly prisma: PrismaService,
   ) {
-    this.supabase = createClient(
-      config.getOrThrow<string>('SUPABASE_URL'),
-      config.getOrThrow<string>('SUPABASE_KEY'),
-      { auth: { autoRefreshToken: false, persistSession: false } },
-    );
+    this.demoAuthEnabled = this.config.get<string>('DEMO_AUTH_ENABLED') === 'true';
+    if (!this.demoAuthEnabled) {
+      this.supabase = createClient(
+        this.config.getOrThrow<string>('SUPABASE_URL'),
+        this.config.getOrThrow<string>('SUPABASE_KEY'),
+        { auth: { autoRefreshToken: false, persistSession: false } },
+      );
+    }
   }
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
@@ -24,6 +28,17 @@ export class JwtAuthGuard implements CanActivate {
     const token = request.headers.authorization?.replace('Bearer ', '');
     if (!token) throw new UnauthorizedException();
 
+    if (this.demoAuthEnabled) {
+      const demoToken = this.config.get<string>('DEMO_AUTH_TOKEN') ?? 'dev-demo-token';
+      if (token !== demoToken) throw new UnauthorizedException();
+      const demoEmail = this.config.get<string>('DEMO_USER_EMAIL') ?? 'admin@collabboard.com';
+      const user = await this.prisma.user.findUnique({ where: { email: demoEmail } });
+      if (!user) throw new UnauthorizedException();
+      request.user = { id: user.id, email: user.email, role: user.role };
+      return true;
+    }
+
+    if (!this.supabase) throw new UnauthorizedException();
     const { data: { user: sbUser }, error } = await this.supabase.auth.getUser(token);
     if (error || !sbUser) throw new UnauthorizedException();
 
