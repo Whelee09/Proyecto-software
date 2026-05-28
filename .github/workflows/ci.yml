@@ -14,24 +14,20 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - uses: pnpm/action-setup@v4
-        with:
-          version: 9
-
       - uses: actions/setup-node@v4
         with:
           node-version: 20
-          cache: pnpm
-          cache-dependency-path: collabboard/backend/pnpm-lock.yaml
+          cache: npm
+          cache-dependency-path: collabboard/backend/package-lock.json
 
       - name: Install dependencies
         working-directory: collabboard/backend
-        run: pnpm install --frozen-lockfile
+        run: npm ci
 
       - name: Generate Prisma client
         working-directory: collabboard/backend
-        run: pnpm prisma generate
+        run: npm run prisma:generate
 
       - name: Run tests
         working-directory: collabboard/backend
-        run: pnpm test --passWithNoTests
+        run: npm test -- --passWithNoTests
