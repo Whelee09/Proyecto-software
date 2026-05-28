@@ -1,0 +1,37 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  test:
+    name: Unit tests (backend)
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 9
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: pnpm
+          cache-dependency-path: collabboard/backend/pnpm-lock.yaml
+
+      - name: Install dependencies
+        working-directory: collabboard/backend
+        run: pnpm install --frozen-lockfile
+
+      - name: Generate Prisma client
+        working-directory: collabboard/backend
+        run: pnpm prisma generate
+
+      - name: Run tests
+        working-directory: collabboard/backend
+        run: pnpm test --passWithNoTests
