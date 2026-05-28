@@ -2,6 +2,7 @@ import { ValidationPipe } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { NestFactory } from '@nestjs/core';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+import { PrismaClient, GlobalRole } from '@prisma/client';
 import { AppModule } from './app.module';
 
 async function bootstrap() {
@@ -31,6 +32,22 @@ async function bootstrap() {
   const port = process.env.PORT || config.get<number>('PORT') || 4000;
   await app.listen(port, '0.0.0.0');
   console.log(`Application is running on: ${await app.getUrl()}`);
+
+  const adminEmail = process.env.ADMIN_EMAIL;
+  if (adminEmail) {
+    const prisma = new PrismaClient();
+    try {
+      const user = await prisma.user.findUnique({ where: { email: adminEmail } });
+      if (!user) {
+        console.warn(`[promote-admin] No existe usuario con email "${adminEmail}". Debe registrarse primero.`);
+      } else if (user.role !== GlobalRole.ADMIN) {
+        await prisma.user.update({ where: { email: adminEmail }, data: { role: GlobalRole.ADMIN } });
+        console.log(`[promote-admin] "${adminEmail}" promovido a ADMIN.`);
+      }
+    } finally {
+      await prisma.$disconnect();
+    }
+  }
 }
 
 bootstrap();
